@@ -75,6 +75,7 @@
     RUN add-apt-repository ppa:deadsnakes/ppa -y && \
 
     # Installing python3.10
+        apt remove -y python3.8 && \
         $APT_INSTALL \
         python3.10 \
         python3.10-dev \
@@ -129,15 +130,14 @@
         xformers==0.0.16 \
         nataili>=0.3.3  \
         nvidia-ml-py3 \
+        pillow==9.5.0 \
         triton \
-        xformers \
         gradio \
         pyyaml \
         unidecode \
         regex \
         rembg \
         pynvml \
-        pillow \
         psutil --extra-index-url https://download.pytorch.org/whl/cu117 && \
 
 
@@ -149,61 +149,61 @@
 
     $PIP_INSTALL jupyterlab==3.4.6 && \
 
-        
+
 # ==================================================================
 # Additional Python Packages (left from base)
 # ------------------------------------------------------------------
 
-#    $PIP_INSTALL \
-#        numpy==1.23.4 \
-#        scipy==1.9.2 \
-#        pandas==1.5.0 \
-#        cloudpickle==2.2.0 \
-#        scikit-image==0.19.3 \
-#        scikit-learn==1.1.2 \
-#        matplotlib==3.6.1 \
-#        ipython==8.5.0 \
-#        ipykernel==6.16.0 \
-#        ipywidgets==8.0.2 \
-#        cython==0.29.32 \
-#        tqdm==4.64.1 \
-#        gdown==4.5.1 \
-#        xgboost==1.6.2 \
-#        pillow==9.5.0 \
-#        seaborn==0.12.0 \
-#        sqlalchemy==1.4.41 \
-#        spacy==3.4.1 \
-#        nltk==3.7 \
-#        boto3==1.24.90 \
-#        tabulate==0.9.0 \
-#        future==0.18.2 \
-#        gradient==2.0.6 \
-#        jsonify==0.5 \
-#        opencv-python==4.6.0.66 \
-#        sentence-transformers==2.2.2 \
-#        wandb==0.13.4 \
-#        awscli==1.25.91 \
-#        jupyterlab-snippets==0.4.1 \
-#        tornado==6.1
+    $PIP_INSTALL \
+        numpy==1.23.4 \
+        scipy==1.9.2 \
+        pandas==1.5.0 \
+        cloudpickle==2.2.0 \
+        scikit-image==0.19.3 \
+        scikit-learn==1.1.2 \
+        matplotlib==3.6.1 \
+        ipython==8.5.0 \
+        ipykernel==6.16.0 \
+        ipywidgets==8.0.2 \
+        python-dotenv \
+        cython==0.29.32 \
+        tqdm==4.64.1 \
+        gdown==4.5.1 \
+        xgboost==1.6.2 \
+        seaborn==0.12.0 \
+        sqlalchemy==1.4.41 \
+        spacy==3.4.1 \
+        nltk==3.7 \
+        boto3==1.24.90 \
+        tabulate==0.9.0 \
+        future==0.18.2 \
+        gradient==2.0.6 \
+        jsonify==0.5 \
+        opencv-python==4.6.0.66 \
+        sentence-transformers==2.2.2 \
+        wandb==0.13.4 \
+        awscli==1.25.91 \
+        jupyterlab-snippets==0.4.1 \
+        tornado==6.1
 
 
 # ==================================================================
 # Installing JRE and JDK
 # ------------------------------------------------------------------
 
-#    RUN $APT_INSTALL \
-#        default-jre \
-#        default-jdk
+    RUN $APT_INSTALL \
+        default-jre \
+        default-jdk
 
 
 # ==================================================================
 # CMake
 # ------------------------------------------------------------------
 
-#    RUN $GIT_CLONE https://github.com/Kitware/CMake ~/cmake && \
-#        cd ~/cmake && \
-#        ./bootstrap && \
-#        make -j"$(nproc)" install
+    RUN $GIT_CLONE https://github.com/Kitware/CMake ~/cmake && \
+        cd ~/cmake && \
+        ./bootstrap && \
+        make -j"$(nproc)" install
 
 
 # ==================================================================
@@ -212,9 +212,20 @@
 
     RUN curl -sL https://deb.nodesource.com/setup_16.x | bash  && \
         $APT_INSTALL nodejs  && \
-        $PIP_INSTALL jupyter_contrib_nbextensions jupyterlab-git && \
-        jupyter contrib nbextension install --user
-                
+        $PIP_INSTALL jupyter_contrib_nbextensions \
+                     jupyterlab-git \
+                     widgetsnbextension && \
+        jupyter contrib nbextension install --user  && \
+        jupyter nbextension enable widgetsnbextension --user --py && \
+        pip cache purge
+
+# ==================================================================
+# Get the AI Horde - Just pul main branch for now
+# ------------------------------------------------------------------
+    WORKDIR /usr/local/
+
+    RUN git clone https://github.com/db0/AI-Horde-Worker
+
 
 # ==================================================================
 # Startup
