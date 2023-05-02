@@ -38,15 +38,17 @@
         python3-distutils && \
         ln -s /usr/bin/python3 /usr/bin/python
     
+    ARG TORCH_VERSION
+    
     # Get base Python packages
     RUN $PIP_INSTALL \
-        torch \
+        torch==${TORCH_VERSION} \
         torchvision \
         torchaudio \
             --index-url https://download.pytorch.org/whl/cu118 && \
         ln -s \
             /usr/local/lib/python3.10/dist-packages/torch/lib/libnvrtc-672ee683.so.11.2 \
-            /usr/local/lib/python3.10/dist-packages/torch/lib/libnvrtc.so
+            /usr/local/lib/python3.10/dist-packages/torch/lib/libnvrtc.so && \
         $PIP_INSTALL \
         xformers \
         nvidia-ml-py3 \
@@ -58,8 +60,11 @@
             --extra-index-url https://download.pytorch.org/whl/cu118
     
     # Get hordelib and its dependencies
+    
+    ARG HORDELIB_VERSION
+    
     RUN $PIP_INSTALL \
-        hordelib \
+        hordelib==${HORDELIB_VERSION} \
             --extra-index-url https://download.pytorch.org/whl/cu18 && \
         cd /opt/ && \
         $GIT_CLONE \
@@ -71,6 +76,5 @@
     WORKDIR /opt/AI-Horde-Worker
 
     EXPOSE 8888 6006
-
 
     CMD jupyter lab --allow-root --ip=0.0.0.0 --no-browser --ServerApp.trust_xheaders=True --ServerApp.disable_check_xsrf=False --ServerApp.allow_remote_access=True --ServerApp.allow_origin='*' --ServerApp.allow_credentials=True
