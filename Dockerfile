@@ -1,6 +1,6 @@
 #!/bin/bash
 
-    FROM nvidia/cuda:11.8.0-cudnn8-base-ubuntu22.04
+    FROM ubuntu:22.04
 
     # Set ENV variables
     ENV LANG C.UTF-8
@@ -35,7 +35,8 @@
         software-properties-common \
         python3 \
         python3-pip \
-        python3-distutils
+        python3-distutils && \
+        ln -s /usr/bin/python3 /usr/bin/python
     
     # Get base Python packages
     RUN $PIP_INSTALL \
@@ -43,8 +44,10 @@
         torchvision \
         torchaudio \
             --index-url https://download.pytorch.org/whl/cu118 && \
+        ln -s \
+            /usr/local/lib/python3.10/dist-packages/torch/lib/libnvrtc-672ee683.so.11.2 \
+            /usr/local/lib/python3.10/dist-packages/torch/lib/libnvrtc.so
         $PIP_INSTALL \
-        triton \
         xformers \
         nvidia-ml-py3 \
         python-dotenv \
@@ -52,7 +55,7 @@
         ipython \
         ipykernel  \
         ipywidgets \
-            --extra-index-url https://download.pytorch.org/whl/cu18
+            --extra-index-url https://download.pytorch.org/whl/cu118
     
     # Get hordelib and its dependencies
     RUN $PIP_INSTALL \
@@ -61,9 +64,11 @@
         cd /opt/ && \
         $GIT_CLONE \
             -b comfy https://github.com/db0/AI-Horde-Worker
+    
+    # Set this to /notebooks/cache for persistence
+    ENV AIWORKER_CACHE_HOME=/opt/AI-Horde-Worker/cache
             
     WORKDIR /opt/AI-Horde-Worker
-
 
     EXPOSE 8888 6006
 
