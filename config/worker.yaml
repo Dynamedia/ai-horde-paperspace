@@ -1,0 +1,16 @@
+# The horde url
+horde_url: "https://aihorde.net"
+
+# Give a cool name to your instance
+worker_name: "An Awesome AI Horde Worker"
+
+# Put other users whose prompts you want to prioritize.
+# The owner's username is always included so you don't need to add it here,
+priority_usernames: []
+
+# If set to True, this worker will not only pick up jobs where the user has the required kudos upfront. 
+# Effectively this will exclude all anonymous accounts, and registered accounts who haven't contributed.
+# Users in priority_usernames and trusted users will bypass this restriction
+require_upfront_kudos: false
+
+

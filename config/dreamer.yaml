@@ -1,0 +1,96 @@
+# The name to use when running a dreamer instance. Will default to `worker_name` if not set
+dreamer_name: "An Awesome Dreamer"
+
+# Set this to false, if you do not want your worker to receive requests for NSFW generations
+nsfw: true
+
+# Set this to True if you want your worker to censor NSFW generations. This will only be active is horde_nsfw == False
+censor_nsfw: false
+
+# A list of words which you do not want to your worker to accept
+blacklist: []
+
+# A list of words for which you always want to allow the NSFW censor filter, even when this worker is in NSFW mode
+censorlist: []
+
+allow_unsafe_ip: true
+# If set to False, this worker will not load post-processors like Codeformers and will not pick up jobs which require post-processing 
+# In the future this will be adjusted so that post-processing can be split from image generation
+
+# The frequency (in seconds) to output worker summary stats, such as kudos per hour.
+# Set to zero to disable stats output completely.
+stats_output_frequency: 30
+
+# The location in which stable diffusion ckpt models are stored
+cache_home: "./"
+
+# Always download models when required without prompting
+always_download: true
+
+# The location of the temp directory, also used for the model cache
+temp_dir: "./tmp"
+
+# Enable the terminal GUI, which displays information about the worker and the horde.
+enable_terminal_ui: false
+
+# Disable the disk cache. By default if RAM and VRAM are filled (up to the limits above) then models will
+# spill over in to a disk cache. If you don't want this to happen you can disable it here. Note that if you
+# disable disk cache and specify more models to load than will fit in memory your worker will endlessly cycle
+# loading and unloading models.
+disable_disk_cache: false
+
+# Set to False to prevent this worker from reading the Horde model queue and loading models which are under load
+dynamic_models: false
+
+# Adjust how many models to load into memory. In future this will likely be an argument for memory size or may disappear, but for right now, I'm lazy
+number_of_dynamic_models: 0
+
+# The maximum amount of models to download dynamically for this worker. Increase this amount of you have plenty of space. Keep it low if you do not
+# When the amount of models downloaded reaches this amount, the dynamic list will only use dynamic models already downloaded
+# Therefore make sure you put some generalist and popular models in your models_to_load list if this number is small!
+max_models_to_download: 10
+
+# The models to use. You can select a different main model, or select more than one.
+# With you can easily load 20 of these models with 32Gb RAM and 6G VRAM.
+# Adjust how many models you load based on how much RAM (not VRAM) you have available.
+# The last model in this list takes priority when the client accepts more than 1
+# if you do not know which models you can add here, use the below command
+# python show_available_models.py
+## WARNING: In case you have dynamic models this list is instead specifying models to always load along with the dynamic models!
+# So your total list will be your specific models + the dynamic models
+# in that case, keep this list short, preferrably to only a few more obscure models you'd like to always see available
+# Instead of a model name you may use of any of the following magic constants:
+#   "ALL MODELS"  - means load all possible models. Expect this to take over 1TB of space!
+#   "TOP n"  - load the top "N" most popular models, use for example, "top 5" or "top 3", etc. 
+#   "ALL <style> MODELS"  -  For example, "all anime models", styles are: generalist, artistic, realistic, anime, furry, other
+#   "ALL SFW MODELS"  -  All models marked as being SFW
+#   "ALL NSFW MODELS"  -  All models marked as being NSFW
+models_to_load:
+  - "top 2"
+  #- "ALL MODELS"
+  #- "TOP 3"
+  #- "stable_diffusion_2.1"
+  #- "stable_diffusion"
+  #- "Anything Diffusion"
+  #- "Yiffy"
+  #- "waifu_diffusion"
+  #- "Arcane Diffusion"
+  #- "Spider-Verse Diffusion"
+  #- "Elden Ring Diffusion"
+  #- "Robo-Diffusion"
+  #- "mo-di-diffusion"
+  #- "Knollingcase"
+  #- "stable_diffusion_inpainting"
+
+# This will be merged with machine config - Rob
+# This is used when dynamic_models == True or TOP n models are selected in models_to_load
+# The models in this list will not be loaded when they exist in the top models
+# This is to avoid loading models which you do not want either due to VRAM constraints, or due to NSFW content
+models_to_skip:
+  - "pix2pix"
+  #- "stable_diffusion_inpainting"  # Inpainting is generally quite heavy along with other models for smaller GPUs.
+  #- "stable_diffusion_2.1",  # Stable diffusion 2.1 has bigger memory requirements than 1.5, so if your card cannot lift, it, disable it
+  #- "stable_diffusion_2.0",  # Same as Stable diffusion 2.1
+  ## Popular NSFW models:
+  #- "Zeipher Female Model"
+  #- "Hentai Diffusion"

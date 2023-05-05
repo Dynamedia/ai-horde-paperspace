@@ -17,6 +17,7 @@
         libgl1 \
         apt-utils \
         pkg-config \
+        libcairo2-dev \
         apt-transport-https \
         ca-certificates \
         wget \
@@ -33,7 +34,9 @@
         iputils-ping \
         cifs-utils \
         software-properties-common \
+        build-essential \
         python3 \
+        python3-dev \
         python3-pip \
         python3-distutils && \
         ln -s /usr/bin/python3 /usr/bin/python
@@ -64,6 +67,8 @@
     ARG HORDELIB_VERSION
     
     RUN $PIP_INSTALL \
+        rembg \
+        unidecode \
         hordelib==${HORDELIB_VERSION} \
             --extra-index-url https://download.pytorch.org/whl/cu18 && \
         cd /opt/ && \

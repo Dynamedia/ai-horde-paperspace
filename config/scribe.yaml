@@ -1,0 +1,6 @@
+## Scribe (LLM Worker)
+
+# The name to use when running a scribe worker. Will default to `worker_name` if not set
+scribe_name: "An Awesome Scribe"
+# The KoboldAI Client API URL
+kai_url: "http://localhost:5000"

@@ -1,19 +1,32 @@
+import os
+import sys
+import subprocess
 import nvidia_smi
 import requests
 import getpass
-import ipywidgets as widgets
 import click
-import os
-from dotenv import load_dotenv
-import subprocess
 import json
+import yaml
 from collections import OrderedDict
 from urllib.parse import urlparse
+from dotenv import load_dotenv
 
 DOTENV = "/notebooks/.env"
 
 models = None
 
+WORKER_YAML_PATH = '/notebooks/config/worker.yaml'
+worker_config = None
+DREAMER_YAML_PATH = '/notebooks/config/dreamer.yaml'
+dreamer_config = None
+ALCHEMIST_YAML_PATH = '/notebooks/config/alchemist.yaml'
+alchemist_config = None
+SCRIBE_YAML_PATH = '/notebooks/config/scribe.yaml'
+scribe_config = None
+GPU_YAML_PATH = '/notebooks/config/gpu/'
+gpu_config = None
+merged_config = None
+BRIDGEDATA_PATH = '/opt/AI-Horde-Worker/bridgeData.yaml'
 
 def is_low_vram():
     nvidia_smi.nvmlInit()
@@ -119,4 +132,58 @@ def get_filename(url):
     a = urlparse(url)     
     return os.path.basename(a.path)
     
+def get_gpu_code():
+    gpu_model = subprocess.check_output(
+    ["nvidia-smi", 
+    "--query-gpu=name",
+    "--format=csv,noheader"]
+    ).decode(sys.stdout.encoding).strip()
+
+    match gpu_model:
+        case "NVIDIA RTX A4000":
+            return "A4000"
+        case "Quadro RTX 4000":
+            return "RTX4000"
+        case "Quadro RTX 5000":
+            return "RTX5000"
+        case "Quadro P5000":
+            return "P5000"
+        case _:
+            return "default"
+
+def get_yaml_config(path):
+    with open(WORKER_YAML_PATH, 'r') as file:
+        return yaml.safe_load(file)
     
+def load_yaml_config():
+    global worker_config
+    global dreamer_config
+    global alchemist_config
+    global scribe_config
+    global gpu_config
+    global merged_config
+    
+    worker_config = get_yaml_config(WORKER_YAML_PATH)
+    dreamer_config = get_yaml_config(DREAMER_YAML_PATH)
+    alchemist_config = get_yaml_config(DREAMER_YAML_PATH)
+    scribe_config = get_yaml_config(SCRIBE_YAML_PATH)
+    gpu_config = get_yaml_config(f'{GPU_YAML_PATH}{get_gpu_code()}.yaml')
+    
+    merged_config = worker_config | dreamer_config | alchemist_config | scribe_config | gpu_config
+    
+    merged_config['models_to_load'] = get_merged_models_to_load()
+    
+    merged_config['models_to_skip'] = get_merged_models_to_skip()
+    
+    merged_config['forms'] = get_merged_forms()
+    
+    merged_config['api_key'] = get_api_key()
+    
+def get_merged_models_to_load()
+    return dreamer_config['models_to_load'] | gpu_config['models_to_load']
+
+def get_merged_models_to_skip()
+    return dreamer_config['models_to_skip'] | gpu_config['models_to_skip']
+
+def get_merged_forms()
+    return alchemist_config['forms'] | gpu_config['forms']
