@@ -12,21 +12,14 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 DOTENV = "/notebooks/.env"
+WORKER_YAML_PATH = '/notebooks/config/worker.yaml'
+DREAMER_YAML_PATH = '/notebooks/config/dreamer.yaml'
+ALCHEMIST_YAML_PATH = '/notebooks/config/alchemist.yaml'
+SCRIBE_YAML_PATH = '/notebooks/config/scribe.yaml'
+GPU_YAML_PATH = '/notebooks/config/gpu/'
+BRIDGEDATA_PATH = '/opt/AI-Horde-Worker/bridgeData.yaml'
 
 models = None
-
-WORKER_YAML_PATH = '/notebooks/config/worker.yaml'
-worker_config = None
-DREAMER_YAML_PATH = '/notebooks/config/dreamer.yaml'
-dreamer_config = None
-ALCHEMIST_YAML_PATH = '/notebooks/config/alchemist.yaml'
-alchemist_config = None
-SCRIBE_YAML_PATH = '/notebooks/config/scribe.yaml'
-scribe_config = None
-GPU_YAML_PATH = '/notebooks/config/gpu/'
-gpu_config = None
-merged_config = None
-BRIDGEDATA_PATH = '/opt/AI-Horde-Worker/bridgeData.yaml'
 
 def is_low_vram():
     nvidia_smi.nvmlInit()
@@ -154,15 +147,17 @@ def get_gpu_code():
 def get_yaml_config(path):
     with open(WORKER_YAML_PATH, 'r') as file:
         return yaml.safe_load(file)
+
+def get_merged_models_to_load()
+    return dreamer_config['models_to_load'] | gpu_config['models_to_load']
+
+def get_merged_models_to_skip()
+    return dreamer_config['models_to_skip'] | gpu_config['models_to_skip']
+
+def get_merged_forms()
+    return alchemist_config['forms'] | gpu_config['forms']
     
-def load_yaml_config():
-    global worker_config
-    global dreamer_config
-    global alchemist_config
-    global scribe_config
-    global gpu_config
-    global merged_config
-    
+def write_yaml_config():
     worker_config = get_yaml_config(WORKER_YAML_PATH)
     dreamer_config = get_yaml_config(DREAMER_YAML_PATH)
     alchemist_config = get_yaml_config(DREAMER_YAML_PATH)
@@ -179,11 +174,5 @@ def load_yaml_config():
     
     merged_config['api_key'] = get_api_key()
     
-def get_merged_models_to_load()
-    return dreamer_config['models_to_load'] | gpu_config['models_to_load']
-
-def get_merged_models_to_skip()
-    return dreamer_config['models_to_skip'] | gpu_config['models_to_skip']
-
-def get_merged_forms()
-    return alchemist_config['forms'] | gpu_config['forms']
+    with open(BRIDGEDATA_PATH, 'w') as file:
+        yaml.dump(merged_config, file)
