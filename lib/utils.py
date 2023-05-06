@@ -145,32 +145,22 @@ def get_gpu_code():
             return "default"
 
 def get_yaml_config(path):
-    with open(WORKER_YAML_PATH, 'r') as file:
+    with open(path, 'r') as file:
         return yaml.safe_load(file)
-
-def get_merged_models_to_load()
-    return dreamer_config['models_to_load'] | gpu_config['models_to_load']
-
-def get_merged_models_to_skip()
-    return dreamer_config['models_to_skip'] | gpu_config['models_to_skip']
-
-def get_merged_forms()
-    return alchemist_config['forms'] | gpu_config['forms']
     
 def write_yaml_config():
     worker_config = get_yaml_config(WORKER_YAML_PATH)
     dreamer_config = get_yaml_config(DREAMER_YAML_PATH)
-    alchemist_config = get_yaml_config(DREAMER_YAML_PATH)
+    alchemist_config = get_yaml_config(ALCHEMIST_YAML_PATH)
     scribe_config = get_yaml_config(SCRIBE_YAML_PATH)
     gpu_config = get_yaml_config(f'{GPU_YAML_PATH}{get_gpu_code()}.yaml')
     
     merged_config = worker_config | dreamer_config | alchemist_config | scribe_config | gpu_config
     
-    merged_config['models_to_load'] = get_merged_models_to_load()
-    
-    merged_config['models_to_skip'] = get_merged_models_to_skip()
-    
-    merged_config['forms'] = get_merged_forms()
+    # Unique list via cast to set and back
+    merged_config['models_to_load'] = list(set(dreamer_config['models_to_load'] + gpu_config['models_to_load']))
+    merged_config['models_to_skip'] = list(set(dreamer_config['models_to_skip'] + gpu_config['models_to_skip']))
+    merged_config['forms'] = list(set(alchemist_config['forms'] + gpu_config['forms']))
     
     merged_config['api_key'] = get_api_key()
     

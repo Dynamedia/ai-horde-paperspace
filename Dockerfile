@@ -1,6 +1,6 @@
 #!/bin/bash
 
-    FROM ubuntu:22.04
+    FROM nvidia/cuda:11.8.0-base-ubuntu22.04
 
     # Set ENV variables
     ENV LANG C.UTF-8
@@ -70,7 +70,7 @@
         rembg \
         unidecode \
         hordelib==${HORDELIB_VERSION} \
-            --extra-index-url https://download.pytorch.org/whl/cu18 && \
+            --extra-index-url https://download.pytorch.org/whl/cu118 && \
         cd /opt/ && \
         $GIT_CLONE \
             -b comfy https://github.com/db0/AI-Horde-Worker

@@ -66,7 +66,7 @@ max_models_to_download: 10
 #   "ALL SFW MODELS"  -  All models marked as being SFW
 #   "ALL NSFW MODELS"  -  All models marked as being NSFW
 models_to_load:
-  - "top 2"
+  - "top 1"
   #- "ALL MODELS"
   #- "TOP 3"
   #- "stable_diffusion_2.1"
