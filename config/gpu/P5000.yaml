@@ -1,58 +1,30 @@
-## Common for all worker Types
+### Dreamer ###
 
-# The amount of parallel jobs to pick up for the horde. Each running job will consume the amount of RAM needed to run each model, and will also affect the speed of other running jobs
-# so make sure you have enough VRAM to load models in parallel, and that the speed of fulfilling requests is not too slow
-# Expected limit per VRAM size: <6 VMAM: 1, <=8 VRAM: 2, <=12 VRAM:3, <=14 VRAM: 4
-# But remember that the speed of your gens will also be affected for each parallel job
 max_threads: 1
-# We will keep this many requests in the queue so we can start working as soon as a thread is available
-# Recommended to keep no higher than 1
 queue_size: 1
-
-
-## Dreamer (Stable Diffusion Worker)
-
-# The amount of power your system can handle
-# 8 means 512*512. Each increase increases the possible resoluion by 64 pixes
-# So if you put this to 2 (the minimum, your SD can only generate 64x64 pixels
-# If you put this to 32, it is equivalent to 1024x1024 pixels
-max_power: 32
-# If set to False, this worker will no longer pick img2img jobs
+max_power: 16
 allow_img2img: true
-# If set to True, this worker will can pick inpainting jobs
 allow_painting: true
-# If set to False, this worker will no longer pick img2img jobs from unsafe IPs
 allow_post_processing: true
-# If set to True, this worker start picking up ControlNet jobs
-# ControlNet is really heavy and requires a good GPU with at least 12G VRAM to run. 
-# If your controlnet jobs crash by running out of CUDA VRAM, set this to false
-allow_controlnet: true # needs at least 12G VRAM
-# VRAM to leave unused, as a percentage or in MB. VRAM the worker can use will be used to load and cache models.
-# Note this NOT the amount of VRAM to use, it's the amount to KEEP FREE. So if something else starts using
-# VRAM the worker will attempt to release it to allow the other software to use it. 
-# Don't set this too high, or you will run out of vram when it can't be released fast enough.
+allow_controlnet: false
 vram_to_leave_free: "20%"
-# RAM to leave unused, as a percentage or in MB. RAM the worker can use will be used to cache models. Same 
-# notes as for VRAM.
-# Don't set this too high or your OS will likely start using lots of swap space and everything will slow down.
 ram_to_leave_free: "20%"
-
-
-
-# This is used when dynamic_models == True or TOP n models are selected in models_to_load
-# The models in this list will not be loaded when they exist in the top models
-# This is to avoid loading models which you do not want either due to VRAM constraints, or due to NSFW content
+dynamic_models: false
+number_of_dynamic_models: 0
+max_models_to_download: 10
+models_to_serve:
+  - "TOP 2"
+  - "stable_diffusion_inpainting"
 models_to_skip:
   - "pix2pix"
 
-## Scribe (LLM Worker)
+### Scribe ###
+
 max_length: 80
-# The max tokens to use from the prompt
 max_context_length: 1024
 
-## Alchemist (Image interrogation and post-processing)
+### Alchemist ###
 
-# The alchemy forms this worker can serve.
 forms:
   - "caption"
   - "nsfw" # uses CPU

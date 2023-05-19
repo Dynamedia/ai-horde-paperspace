@@ -157,11 +157,6 @@ def write_yaml_config():
     
     merged_config = worker_config | dreamer_config | alchemist_config | scribe_config | gpu_config
     
-    # Unique list via cast to set and back
-    merged_config['models_to_load'] = list(set(dreamer_config['models_to_load'] + gpu_config['models_to_load']))
-    merged_config['models_to_skip'] = list(set(dreamer_config['models_to_skip'] + gpu_config['models_to_skip']))
-    merged_config['forms'] = list(set(alchemist_config['forms'] + gpu_config['forms']))
-    
     merged_config['api_key'] = get_api_key()
     
     with open(BRIDGEDATA_PATH, 'w') as file:

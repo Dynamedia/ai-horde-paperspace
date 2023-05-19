@@ -10,11 +10,12 @@
 
     ENV APT_INSTALL="apt-get install -y --no-install-recommends"
     ENV PIP_INSTALL="pip --no-cache-dir install --upgrade"
-    ENV GIT_CLONE="git clone --depth 10"
 
     RUN apt-get update && \
         $APT_INSTALL software-properties-common && \
         add-apt-repository -y ppa:deadsnakes/ppa && \
+        apt purge -y python3.8-minimal && \
+        apt autoremove -y && \
         apt-get update && \
         $APT_INSTALL \
             python3.10 \
@@ -39,7 +40,8 @@
             iputils-ping \
             cifs-utils \
             build-essential && \
-        ln -s /usr/bin/python3 /usr/bin/python && \
+        ln -sf /usr/bin/python3.10 /usr/bin/python && \
+        ln -sf /usr/bin/python3.10 /usr/bin/python3 && \
         curl https://bootstrap.pypa.io/get-pip.py | python3.10
     
     # Xformers is tightly bound to a specific Torch version - pulls as dependency
@@ -64,7 +66,7 @@
     
     ADD ./opt/horde /opt/horde
     
-    ENV AIWORKER_CACHE_HOME=/notebooks/models
+    ENV AIWORKER_CACHE_HOME=/notebooks/cache
     ENV PATH=$PATH:/opt/horde/bin:/notebooks/bin
     
     RUN /opt/horde/bin/install-horde.sh && \

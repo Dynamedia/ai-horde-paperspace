@@ -1,6 +1,4 @@
-# The name to use when running an alchemist worker. Will default to `worker_name` if not set
 alchemist_name: "An Awesome Alchemist"
-# The alchemy forms this worker can serve.
 forms:
   - "caption"
   - "nsfw" # uses CPU
