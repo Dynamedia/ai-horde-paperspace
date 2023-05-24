@@ -7,6 +7,9 @@ do
     esac
 done
 
+echo "Updating worker and hordelib..."
+update-horde.sh
+
 cd /notebooks
 python -c 'from lib import utils; utils.write_yaml_config()'
 
