@@ -13,11 +13,10 @@ done
 
 if [ -z "$xformers" ]
 then
-    echo "xformers version (-x) not specified."
-    exit 1
-else
-    echo "Building for xformers Version $xformers";
+    xformers=0.0.20
 fi
+
+echo "Building for xformers Version $xformers";
 
 VER_TAG=xformers_${xformers}
 

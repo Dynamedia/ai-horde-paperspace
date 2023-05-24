@@ -1,7 +1,7 @@
 #!/bin/bash
 
     # Ensure Nvidia container toolkit
-    FROM nvidia/cuda:12.1.1-base-ubuntu20.04
+    FROM nvidia/cuda:11.8.0-base-ubuntu20.04
 
     # Set ENV variables
     ENV LANG C.UTF-8
@@ -10,55 +10,43 @@
 
     ENV APT_INSTALL="apt-get install -y --no-install-recommends"
     ENV PIP_INSTALL="pip --no-cache-dir install --upgrade"
-
-    RUN apt-get update && \
-        $APT_INSTALL software-properties-common && \
-        add-apt-repository -y ppa:deadsnakes/ppa && \
-        apt purge -y python3.8-minimal && \
-        apt autoremove -y && \
+    # Minimal base environment
+    RUN echo \
+        "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main" > \
+        /etc/apt/sources.list.d/deadsnakes-ubuntu-ppa-focal.list && \
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776  && \
         apt-get update && \
         $APT_INSTALL \
             python3.10 \
             python3.10-dev \
             python3.10-distutils \
             libgl1 \
-            apt-utils \
             pkg-config \
-            apt-transport-https \
-            ca-certificates \
             wget \
-            rsync \
             git \
-            vim \
-            mlocate \
-            libssl-dev \
             curl \
-            openssh-client \
-            unzip \
-            zip \
             nano \
-            iputils-ping \
-            cifs-utils \
             build-essential && \
         ln -sf /usr/bin/python3.10 /usr/bin/python && \
         ln -sf /usr/bin/python3.10 /usr/bin/python3 && \
         curl https://bootstrap.pypa.io/get-pip.py | python3.10
     
-    # Xformers is tightly bound to a specific Torch version - pulls as dependency
-    ARG XFORMERS_VERSION=0.0.19
+    # Xformers is tightly bound to a specific Torch version. It's all we need to require here.
+    ARG XFORMERS_VERSION=0.0.20
     
-    # Get base Python packages
+    # 1. Get base Python packages required by paperspace
+    # 2. Get horde notebook dependencies
+    # 3. Pre-satisfy torch via xformers until Hordelib pins it correctly
     RUN $PIP_INSTALL \
-            xformers==${XFORMERS_VERSION} \
-            torchvision \
-            torchaudio \
-            triton \
-            nvidia-ml-py3 \
-            python-dotenv \
             jupyterlab \
             ipython \
             ipykernel \
-            ipywidgets \
+            ipywidgets && \
+        $PIP_INSTALL \
+            nvidia-ml-py3 \
+            python-dotenv && \
+        $PIP_INSTALL \
+            xformers==${XFORMERS_VERSION} \
             --extra-index https://download.pytorch.org/whl/cu118
     
     # Get the worker and its dependencies -
@@ -66,15 +54,13 @@
     
     ADD ./opt/horde /opt/horde
     
-    ENV AIWORKER_CACHE_HOME=/notebooks/cache
+    ENV AIWORKER_CACHE_HOME=/tmp
     ENV PATH=$PATH:/opt/horde/bin:/notebooks/bin
     
     RUN /opt/horde/bin/install-horde.sh && \
         /opt/horde/bin/install-fixes.sh
     
     EXPOSE 8888 6006
-    
-    ENTRYPOINT ["/opt/horde/bin/entrypoint.sh"]
     
     # Copied from Paperspace base
         

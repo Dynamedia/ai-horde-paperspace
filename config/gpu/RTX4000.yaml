@@ -1,12 +1,11 @@
 ### Dreamer ###
 
-# 3@20, 2@24
-max_threads: 3
+max_threads: 2
 queue_size: 0
-max_power: 20
+max_power: 16
 allow_img2img: true
-allow_painting: true
-allow_post_processing: true
+allow_painting: false
+allow_post_processing: false
 allow_controlnet: false
 vram_to_leave_free: "20%"
 ram_to_leave_free: "20%"
@@ -14,7 +13,7 @@ dynamic_models: false
 number_of_dynamic_models: 0
 max_models_to_download: 10
 models_to_load:
-  - "TOP 4"
+  - "TOP 2"
   #- "stable_diffusion_inpainting"
 models_to_skip:
   - "pix2pix"
