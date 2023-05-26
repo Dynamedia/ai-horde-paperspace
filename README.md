@@ -14,29 +14,28 @@ Create a new notebook with the following advanced settings:
 - Container Name: `dynamedia/ai-horde-paperspace:latest`
 
 ## Configuration
+
 Once your container is running you will need to do a small amount of configuration in the file browser. You only need to do this once as all settings will be stored in your workspace for future use.
 
 ### Required
 
-- Edit your worker name in config/worker.yaml
-- Edit your dreamer name in config/dreamer.yaml
+- Edit `worker_name` in `config/worker.yaml`
+- Edit `dreamer_name` in `config/dreamer.yaml`
 
 ### Optional
 
-- Set cache_home to '/notebooks/cache' in dreamer.yaml for persistent model storage. Beware - Paperspace may charge you for using too much storage. Check their T&C.
+- Set `cache_home` to `'/notebooks/cache/` in `config/dreamer.yaml` for persistent model storage. Beware - Paperspace may charge you for using too much storage. Check their T&C.
 
-- Edit the files in config/gpu for better performance. Default settings are quite conservative and avoid picking jobs that will take a long time to process.
+- Edit the files in `config/gpu/` for better performance. Default settings are quite conservative and avoid picking jobs that will take a long time to process. Each file in this directory relates to a machine type on the Paperspace Gradient Pro plan.
 
 ## Running
 
-To run the worker you can either press run in dreamer.ipynb or open a terminal and type dreamer.sh
+To run the worker you can either press run in dreamer.ipynb or open a terminal and type `dreamer.sh`
 
 The first time you run the worker you will be asked for your AI Horde API key which will then be saved in /notebooks/.env - This is to avoid ever storing it where it could be accidentally viewed if the notebook is set to public.
 
 
 ## Managing your Worker
-
-When the worker is running you may make changes to the live configuration by editing config/live/bridgeData.yaml
 
 The dreamer.sh script will automatically respawn your worker if it should die for any reason.
 
