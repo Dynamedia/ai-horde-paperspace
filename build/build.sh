@@ -20,6 +20,6 @@ echo "Building for xformers Version $xformers";
 
 VER_TAG=xformers_${xformers}
 
-docker build --build-arg XFORMERS_VERSION=$xformers -t dynamedia/ai-horde-paperspace:latest -t dynamedia/ai-horde-paperspace:$VER_TAG . &&
+docker build --no-cache --build-arg XFORMERS_VERSION=$xformers -t dynamedia/ai-horde-paperspace:latest -t dynamedia/ai-horde-paperspace:$VER_TAG . &&
 docker push dynamedia/ai-horde-paperspace:$VER_TAG &&
 docker push dynamedia/ai-horde-paperspace:latest
