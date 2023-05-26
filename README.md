@@ -30,13 +30,13 @@ Once your container is running you will need to do a small amount of configurati
 
 ## Running
 
-To run the worker you can either press run in dreamer.ipynb or open a terminal and type `dreamer.sh`
+To run the worker you can either press run in `dreamer.ipynb` or open a terminal and type `dreamer.sh`
 
-The first time you run the worker you will be asked for your AI Horde API key which will then be saved in /notebooks/.env - This is to avoid ever storing it where it could be accidentally viewed if the notebook is set to public.
+The first time you run the worker you will be asked for your AI Horde API key which will then be saved in `/notebooks/.env` - This is to avoid ever storing it where it could be accidentally viewed if the notebook is set to public.
 
 
 ## Managing your Worker
 
-The dreamer.sh script will automatically respawn your worker if it should die for any reason.
+The dreamer.sh script will automatically respawn your worker if it should die unexpectedly.
 
 You can use any of the AI Horde UI's to set or remove maintenance mode. I recommend [ArtBot](https://tinybots.net/artbot).
