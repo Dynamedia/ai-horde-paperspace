@@ -7,58 +7,65 @@
     ENV LANG C.UTF-8
     ENV SHELL=/bin/bash
     ENV DEBIAN_FRONTEND=noninteractive
-
+    ENV PATH=$PATH:/opt/horde/bin:/opt/micromamba/bin:/notebooks/bin
     ENV APT_INSTALL="apt-get install -y --no-install-recommends"
-    ENV PIP_INSTALL="pip --no-cache-dir install --upgrade"
-    # Minimal base environment
-    RUN echo \
-        "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main" > \
-        /etc/apt/sources.list.d/deadsnakes-ubuntu-ppa-focal.list && \
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776  && \
-        apt-get update && \
+    ENV MAMBA_CREATE="micromamba --experimental create -y -c conda-forge"
+    ENV PIP_INSTALL="pip --no-cache-dir install"
+    
+    # Force torch version to match in following mamba envs
+    ARG TORCH_VERSION=2.0.1
+    
+    # Minimal base environment with micromamba
+    RUN apt-get update && \
         $APT_INSTALL \
-            python3.10 \
-            python3.10-dev \
-            python3.10-distutils \
-            libgl1 \
             pkg-config \
-            wget \
+            libgl1 \
+            parallel \
             git \
             curl \
             nano \
             build-essential && \
-        ln -sf /usr/bin/python3.10 /usr/bin/python && \
-        ln -sf /usr/bin/python3.10 /usr/bin/python3 && \
-        curl https://bootstrap.pypa.io/get-pip.py | python3.10
-    
-    # Xformers is tightly bound to a specific Torch version. It's all we need to require here.
-    ARG XFORMERS_VERSION=0.0.20
-    
-    # 1. Get base Python packages required by paperspace
-    # 2. Get horde notebook dependencies
-    # 3. Pre-satisfy torch via xformers until Hordelib pins it correctly
-    RUN $PIP_INSTALL \
+        mkdir -p /opt/micromamba && \
+        cd /opt/micromamba && \
+        curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba && \
+        micromamba shell init --shell=bash --prefix=~/micromamba && \
+        $MAMBA_CREATE -y -n jupyter python=3.10 && \
+        micromamba run -n jupyter $PIP_INSTALL \
             jupyterlab \
+            jupyterlab-snippets \
             ipython \
             ipykernel \
-            ipywidgets && \
-        $PIP_INSTALL \
+            ipywidgets \
+            click \
             nvidia-ml-py3 \
-            python-dotenv && \
-        $PIP_INSTALL \
-            xformers==${XFORMERS_VERSION} \
-            --extra-index https://download.pytorch.org/whl/cu118
+            python-dotenv
     
-    # Get the worker and its dependencies -
-    # Our entrypoint will update this on boot (fast)
-    
+    # AI Horde Worker & KoboldAI Client
+    RUN cd /opt && \
+        git clone https://github.com/Haidra-Org/AI-Horde-Worker && \
+        $MAMBA_CREATE -n horde python=3.10 && \
+        micromamba run -n horde $PIP_INSTALL \
+            --extra-index https://download.pytorch.org/whl/cu118 \
+            torch==${TORCH_VERSION} \
+            torchvision \
+            torchaudio \
+            triton \
+            xformers && \
+        micromamba run -n horde $PIP_INSTALL \
+            -r /opt/AI-Horde-Worker/requirements.txt && \
+        git clone https://github.com/KoboldAI/KoboldAI-Client && \
+        cp /opt/KoboldAI-Client/requirements.txt /opt/KoboldAI-Client/reqs-mod.txt && \
+        sed -i '/^torch.*[\W|=|>|<]*$/d' /opt/KoboldAI-Client/reqs-mod.txt && \
+        $MAMBA_CREATE -n koboldai python=3.10 && \
+        micromamba run -n koboldai $PIP_INSTALL \
+            --extra-index https://download.pytorch.org/whl/cu118 \
+            torch==${TORCH_VERSION} && \
+        micromamba run -n koboldai $PIP_INSTALL \
+            -r /opt/KoboldAI-Client/reqs-mod.txt
+        
     ADD ./opt/horde /opt/horde
     
     ENV AIWORKER_CACHE_HOME=/tmp
-    ENV PATH=$PATH:/opt/horde/bin:/notebooks/bin
-    
-    RUN /opt/horde/bin/install-horde.sh && \
-        /opt/horde/bin/install-fixes.sh
     
     EXPOSE 8888 6006
     

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Python should be available from the notebook - Make it so
+# Simple passthrough to jupyter mamba environment.
+
+micromamba run -n jupyter python "$@"

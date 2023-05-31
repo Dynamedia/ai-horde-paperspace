@@ -3,5 +3,5 @@
 cd /opt/AI-Horde-Worker
 git pull
 # Ensure latest hordelib
-pip --no-cache-dir install -U hordelib
-pip --no-cache-dir install -r requirements.txt
+micromamba run -n horde pip --no-cache-dir install -U hordelib
+micromamba run -n horde pip --no-cache-dir install -r requirements.txt

@@ -1,2 +1,4 @@
 scribe_name: "An Awesome Scribe"
 kai_url: "http://localhost:5000"
+branded_model: true
+scribe_model: "KoboldAI/OPT-2.7B-Erebus"

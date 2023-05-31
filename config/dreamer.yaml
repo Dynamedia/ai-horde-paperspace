@@ -3,10 +3,10 @@ nsfw: true
 censor_nsfw: false
 blacklist: []
 censorlist: []
-allow_unsafe_ip: true.
+allow_unsafe_ip: true
 stats_output_frequency: 30
 cache_home: "./"
 always_download: true
 temp_dir: "./tmp"
-enable_terminal_ui: false
+disable_terminal_ui: true
 disable_disk_cache: false

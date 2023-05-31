@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Paperspace calls jupyter on startup so it needs to be available.
+# Simple passthrough to jupyter mamba environment.
+
+micromamba run -n jupyter jupyter "$@"

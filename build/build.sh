@@ -1,25 +1,24 @@
 #!/bin/bash
 
-# Build for specific xformers because we do not want it
-# downloading with its torch dependency at runtime
-#- Too much time wasted.
+# Build for specific torch because we need to force Hordelib
+# and KoboldAI to use the same version to save space.
 
-while getopts x: flag
+while getopts t: flag
 do
     case "${flag}" in
-        x) xformers=${OPTARG};;
+        t) torch=${OPTARG};;
     esac
 done
 
-if [ -z "$xformers" ]
+if [ -z "$torch" ]
 then
-    xformers=0.0.20
+    torch=2.0.1
 fi
 
-echo "Building for xformers Version $xformers";
+echo "Building for torch Version $torch";
 
-VER_TAG=xformers_${xformers}
+VER_TAG=torch_${torch}
 
-docker build --build-arg XFORMERS_VERSION=$xformers -t dynamedia/ai-horde-paperspace:latest -t dynamedia/ai-horde-paperspace:$VER_TAG . &&
+docker build --progress=plain --build-arg TORCH_VERSION=$torch -t dynamedia/ai-horde-paperspace:latest -t dynamedia/ai-horde-paperspace:$VER_TAG . 
 docker push dynamedia/ai-horde-paperspace:$VER_TAG &&
 docker push dynamedia/ai-horde-paperspace:latest
