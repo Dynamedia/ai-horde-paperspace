@@ -17,8 +17,8 @@ micromamba run -n jupyter python -c 'from lib import utils; utils.write_yaml_con
 update-horde-worker.sh "${branch}"
 update-koboldai-client.sh
 
-run-koboldai-client.sh &
-run-scribe-worker.sh "${model}" &
+run-koboldai-client.sh "${model}" &
+run-scribe-worker.sh "${quiet}" &
 
 # Wait around to receive SIGINT
 sleep infinity
