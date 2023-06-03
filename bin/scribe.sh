@@ -6,7 +6,7 @@ while getopts qm:b: flag
 do
     case "${flag}" in
         q) quiet="-q";;
-        b) model="-m ${OPTARG}";;
+        m) model="-m ${OPTARG}";;
         b) branch="-b ${OPTARG}";;
     esac
 done
