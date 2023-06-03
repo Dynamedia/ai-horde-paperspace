@@ -7,7 +7,7 @@
     ENV LANG C.UTF-8
     ENV SHELL=/bin/bash
     ENV DEBIAN_FRONTEND=noninteractive
-    ENV PATH=$PATH:/opt/horde/bin:/opt/micromamba/bin:/notebooks/bin
+    ENV PATH=$PATH:/notebooks/bin:/opt/horde/bin:/opt/micromamba/bin
     ENV APT_INSTALL="apt-get install -y --no-install-recommends"
     ENV MAMBA_CREATE="micromamba --experimental create -y -c conda-forge"
     ENV PIP_INSTALL="pip --no-cache-dir install"
@@ -20,9 +20,9 @@
         $APT_INSTALL \
             pkg-config \
             libgl1 \
-            parallel \
             git \
             curl \
+            wget \
             nano \
             build-essential && \
         mkdir -p /opt/micromamba && \

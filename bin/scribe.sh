@@ -2,12 +2,11 @@
 
 trap 'kill $(jobs -p)' EXIT
 
-branch="-b main"
-
-while getopts qb: flag
+while getopts qm:b: flag
 do
     case "${flag}" in
         q) quiet="-q";;
+        b) model="-m ${OPTARG}";;
         b) branch="-b ${OPTARG}";;
     esac
 done
@@ -16,9 +15,10 @@ cd /notebooks
 micromamba run -n jupyter python -c 'from lib import utils; utils.write_yaml_config()'
 
 update-horde-worker.sh "${branch}"
-update-hordelib.sh
+update-koboldai-client.sh
 
-run-dreamer-worker.sh "${quiet}" &
+run-koboldai-client.sh &
+run-scribe-worker.sh "${model}" &
 
 # Wait around to receive SIGINT
 sleep infinity

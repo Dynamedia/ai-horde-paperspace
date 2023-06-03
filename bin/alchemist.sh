@@ -16,9 +16,8 @@ cd /notebooks
 micromamba run -n jupyter python -c 'from lib import utils; utils.write_yaml_config()'
 
 update-horde-worker.sh "${branch}"
-update-hordelib.sh
 
-run-dreamer-worker.sh "${quiet}" &
+run-alchemist-worker.sh "${quiet}" &
 
 # Wait around to receive SIGINT
 sleep infinity
